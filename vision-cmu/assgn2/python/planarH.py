@@ -10,10 +10,20 @@ def computeH(x1, x2):
     for i in range(N):
         A[i:i+1,:] = mat(x1[i,0],x2[i,0],x1[i,1],x2[i,1])
     
-    eigenValues = np.linalg.eig(np.dot(A,A))
+    eigenValues, eigenVector = np.linalg.eig(np.dot(A,A))
+    temp = 0
     
-
-	return H2to1
+    for j in range(9):
+        if eigenValues[j] < temp:
+            temp = j
+            
+    h = eigenVector[:,temp]
+    H2to1 = np.zeros(3,3)
+    H2to1[0,:] = h[:2]
+    H2to1[1,:] = h[3:5]
+    H2to1[2,:] = h[6:8]
+    
+    return H2to1
 
 def mat(x1,x2,y1,y2):
     output = np.array([[x1,y1,1,0,0,0,-x1*x2,-y1*x2,-x1],[0,0,0,x1,y1,1,-x1*y2,-y1*y2,-y2]])
