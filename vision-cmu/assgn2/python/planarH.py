@@ -33,22 +33,27 @@ def mat(x1,x2,y1,y2):
 def computeH_norm(x1, x2):
 	#Q2.2.2
 	#Compute the centroid of the points
-
-
+    x1_mean = np.average(x1,axis=1)
+    x2_mean = np.average(x2,axis=1)
+    
 	#Shift the origin of the points to the centroid
-
+    x1_shifted = x1 - x1_mean
+    x2_shifted = x2 - x2_mean
 
 	#Normalize the points so that the largest distance from the origin is equal to sqrt(2)
-
-
+    s1_max = np.max([np.sqrt(x1[i,0]**2 + x1[i,1]**2) for i in range(x1.shape[0])])
+    s2_max = np.max([np.sqrt(x2[i,0]**2 + x2[i,1]**2) for i in range(x2.shape[0])])
+    x1_shifted *= (np.sqrt(2)/s1_max)
+    x2_shifted *= (np.sqrt(2)/s2_max)
+    
 	#Similarity transform 1
-
+    
 
 	#Similarity transform 2
 
 
 	#Compute homography
-
+    H_norm = computeH(x1_shifted, x2_shifted)
 
 	#Denormalization
 	
