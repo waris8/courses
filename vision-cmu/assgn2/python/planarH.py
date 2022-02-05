@@ -71,15 +71,22 @@ def computeH_ransac(locs1, locs2):
     k = 20
     t = 1
     inliers = np.zeros(N,1)
+    bestH2to1 = np.zeros
     for i in range(k):
         n = np.random.randint(0,N,size=4)
         x1 = np.array([locs1[i] for i in range(n)])
         x2 = np.array([locs2[i] for i in range(n)])
         H2to1 = computeH_norm(x1,x2)
+        temp_inliers = np.zeros(N,1)
         for j in range(N):
             x2_calc = compute_x2(locs1[j],H2to1)
-            
-	return bestH2to1, inliers
+            l2_distance = np.linalg.norm(locs2[j]-x2_calc)
+            if l2_distance < t:
+                temp_inliers[j] = 1
+        if np.sum(temp_inliers) > np.sum(inliers):
+            inliers = temp_inliers
+            bestH2to1 = H2to1
+    return bestH2to1, inliers
 
 def compute_x2(x1, H2to1):
     x1 = np.hstack((x1,1))
