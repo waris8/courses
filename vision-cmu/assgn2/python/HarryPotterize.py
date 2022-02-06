@@ -18,6 +18,6 @@ matches = np.hstack((matches.T, np.ones((2,1),np.int64))).T
 n = matches.shape[0]
 x1 = np.array([locs1[i] for i in matches[:,0]])
 x2 = np.array([locs2[i] for i in matches[:,1]])
-H2to1 = computeH_ransac(x1, x2)
+H2to1, inliers  = computeH_ransac(x1, x2)
 warped_image = skimage.transform.warp(hp_cover, H2to1)
 skimage.io.imshow(warped_image)

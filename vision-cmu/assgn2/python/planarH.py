@@ -10,7 +10,7 @@ def computeH(x1, x2):
     for i in range(N):
         A[2*i:2*(i+1),:] = mat(x1[i,0],x2[i,0],x1[i,1],x2[i,1])
     
-    eigenValues, eigenVector = np.linalg.eig(np.dot(A.T,A))
+    eigenValues, eigenVector = np.linalg.eig(np.matmul(A.T,A))
     temp = 0
     
     for j in range(9):
@@ -33,32 +33,32 @@ def mat(x1,x2,y1,y2):
 def computeH_norm(x1, x2):
 	#Q2.2.2
 	#Compute the centroid of the points
-    x1_mean = np.average(x1,axis=1)
-    x2_mean = np.average(x2,axis=1)    
+    x1_mean = np.average(x1,axis=0).astype(np.int64)
+    x2_mean = np.average(x2,axis=0).astype(np.int64)    
 	#Shift the origin of the points to the centroid
     # x1_shifted = x1 - x1_mean
     # x2_shifted = x2 - x2_mean 
-    trans_mat_1 = np.array([[0,0,-x1_mean[0]],[0,0,-x1_mean[1]],[0,0,1]])
-    trans_mat_2 = np.array([[0,0,-x2_mean[0]],[0,0,-x2_mean[1]],[0,0,1]])
+    trans_mat_1 = np.array([[1,0,-x1_mean[0]],[0,1,-x1_mean[1]],[0,0,1]])
+    trans_mat_2 = np.array([[1,0,-x2_mean[0]],[0,1,-x2_mean[1]],[0,0,1]])
 	#Normalize the points so that the largest distance from the origin is equal to sqrt(2)
-    s1_max = np.max([np.sqrt(x1[i,0]**2 + x1[i,1]**2) for i in range(x1.shape[0])])
-    s2_max = np.max([np.sqrt(x2[i,0]**2 + x2[i,1]**2) for i in range(x2.shape[0])])
+    s1_max = np.max([np.sqrt((x1[i,0]-x1_mean[0])**2 + (x1[i,1]-x1_mean[1])**2) for i in range(x1.shape[0])])
+    s2_max = np.max([np.sqrt((x2[i,0]-x2_mean[0])**2 + (x2[i,0]-x2_mean[1])**2) for i in range(x2.shape[0])])
     scale_mat_1 = np.array([[np.sqrt(2)/s1_max,0,0],[0,np.sqrt(2)/s1_max,0],[0,0,1]])
     scale_mat_2 = np.array([[np.sqrt(2)/s2_max,0,0],[0,np.sqrt(2)/s2_max,0],[0,0,1]])
     # x1_shifted *= (np.sqrt(2)/s1_max)
     # x2_shifted *= (np.sqrt(2)/s2_max)
 	#Similarity transform 1
-    T1 = np.matmul(trans_mat_1,scale_mat_1)
+    T1 = np.matmul(scale_mat_1, trans_mat_1)
     x1_hom = np.hstack((x1,np.ones((x1.shape[0],1),dtype=np.int64)))
     x1_trans = np.matmul(T1,x1_hom.T)
 	#Similarity transform 2
-    T2 = np.matmul(trans_mat_2,scale_mat_2)
+    T2 = np.matmul(scale_mat_2, trans_mat_2)
     x2_hom = np.hstack((x2,np.ones((x1.shape[0],1),dtype=np.int64)))
     x2_trans = np.matmul(T2,x2_hom.T)
 	#Compute homography
     H_norm = computeH(x1_trans, x2_trans)
 	#Denormalization
-    H2to1 = np.matmul(np.linalg.inv(T1),np.dot(H_norm,T2))
+    H2to1 = np.matmul(np.linalg.inv(T1),np.matmul(H_norm,T2))
     return H2to1
 
 
@@ -68,8 +68,8 @@ def computeH_ransac(locs1, locs2):
 	#Q2.2.3
 	#Compute the best fitting homography given a list of matching points
     N = locs1.shape[0]
-    k = 20
-    t = 1
+    k = 10
+    t = 500
     inliers = np.zeros((N,1),dtype=np.int64)
     bestH2to1 = np.zeros((3,3))
     for i in range(k):
@@ -92,7 +92,7 @@ def compute_x2(x1, H2to1):
     x1 = np.hstack((x1,1))
     x2 = np.dot(H2to1,x1)
     x2 = x2/x2[2]
-    return x2[:1]
+    return x2[:2].astype(np.int64)
 
 def compositeH(H2to1, template, img):
 	
