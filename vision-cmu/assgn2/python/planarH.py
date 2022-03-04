@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 
-
 def computeH(x1, x2):
 	#Q2.2.1
 	#Compute the homography between two sets of points
@@ -96,6 +95,7 @@ def compute_x2(x1, H2to1):
 
 def compositeH(H2to1, template, img):
 	
+
 	#Create a composite image after warping the template image on top
 	#of the image using the homography
 
