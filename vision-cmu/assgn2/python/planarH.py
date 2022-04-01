@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 
 def computeH(x1, x2):
+
 	#Q2.2.1
 	#Compute the homography between two sets of points
     N = x1.shape[0]
