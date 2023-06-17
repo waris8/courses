@@ -17,7 +17,7 @@ parser.add_argument(
     type=str,
     help="The name of the environment to run your algorithm on.",
     choices=["Deterministic-4x4-FrozenLake-v0", "Stochastic-4x4-FrozenLake-v0"],
-    default="Deterministic-4x4-FrozenLake-v0",
+    default="Stochastic-4x4-FrozenLake-v0",
 )
 
 parser.add_argument(
@@ -78,18 +78,20 @@ def policy_evaluation(P, nS, nA, policy, gamma=0.9, tol=1e-3):
     ############################
     # YOUR IMPLEMENTATION HERE #
     r_ex = np.zeros(nS)   #expected immediate reward when in state s and following policy
-    p_trans = np.zeros((nS,nS)) #transition probability matrix given previous and new state and policy
+    p_trans = np.zeros((nS,nS)) #transition probability matrix given previous and new state and policy, for each policy there is separate transition probability
+    
+    #for this deterministic and stocastic case, pi(a|s) is 1 as action is deterministic and also rewards are deterministic 
     
     for s in range(nS):
         for p, s_new, r, t in P[s][policy[s]]:
-            r_ex[s] += p*r
-            p_trans[s][s_new] += p
+            r_ex[s] += p*r  # calculate expected immediate reward when in state s and following policy
+            p_trans[s][s_new] += p #for given s and action, all states can be reached with a probability
             
     while True:
         delta = 0
         for s in range(nS):
             v = value_function[s]
-            value_function[s] = r_ex[s] + gamma*np.dot(p_trans[s], value_function)
+            value_function[s] = r_ex[s] + gamma*np.dot(p_trans[s], value_function) #calculate value function as a sum of expected immediate reward and expected future reward as defined in sutton and barto
             delta = max(delta, abs(value_function[s]-v))
         if delta < tol:
             break
@@ -126,8 +128,7 @@ def policy_improvement(P, nS, nA, value_from_policy, policy, gamma=0.9):
         q = np.zeros(nA)
         for a in range(nA):
             for p,s_new,r,t in P[s][a]:
-                q[a] += p*(r+gamma*value_from_policy[s_new])
-        # policy[s] = np.argmax(np.dot(P[s][:][0][0], P[s][:][0][2]+gamma*value_from_policy[P[s][:][0][1]]))
+                q[a] += p*(r+gamma*value_from_policy[s_new]) #calculate q given s and a and then choose a for max q
         new_policy[s] = np.argmax(q)
     ############################
     return new_policy
@@ -198,7 +199,7 @@ def value_iteration(P, nS, nA, gamma=0.9, tol=1e-3):
             q = np.zeros(nA)
             for a in range(nA):
                 for p,s_new,r,t in P[s][a]:
-                    q[a] += p*(r+gamma*value_function[s_new])
+                    q[a] += p*(r+gamma*value_function[s_new]) # calculate q and set max q as v
             value_function[s] = np.max(q)
             delta = max(delta, abs(v-value_function[s]))
                         
@@ -206,7 +207,7 @@ def value_iteration(P, nS, nA, gamma=0.9, tol=1e-3):
         q = np.zeros(nA)
         for a in range(nA):
             for p,s_new,r,t in P[s][a]:
-                q[a] += p*(r+gamma*value_function[s_new])
+                q[a] += p*(r+gamma*value_function[s_new]) #choose a as per max q
         policy[s] = np.argmax(q)
     ############################
     return value_function, policy
