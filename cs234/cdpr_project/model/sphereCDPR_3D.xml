@@ -1,0 +1,120 @@
+<mujoco model="sphereCDPR_3D">
+   <compiler inertiafromgeom="auto" coordinate="local" />
+    <option gravity="0 0 -9.81" timestep="0.01" integrator="RK4" solver="Newton" />
+    
+   <asset>
+        <texture name="ground_tex" type="2d" builtin="checker" rgb1="0.8 0.8 0.8" rgb2="0.6 0.6 0.6" width="100" height="100" />
+        <material name="collision_mat" />
+        <texture type="skybox" builtin="gradient" rgb1=".3 .5 .7" rgb2="0 0 0" width="512" height="512"/>
+        <texture name="body" type="cube" builtin="flat" mark="cross" width="127" height="1278"
+             rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" random="0.01"/>
+        <material name="body" texture="body" texuniform="true" rgba="0.8 0.6 .4 1"/>
+        <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+        <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance=".2"/>
+    </asset>
+    
+    <visual>
+    <map force="0.1" zfar="30"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <quality shadowsize="4096"/>
+    <global offwidth="800" offheight="800"/>
+  </visual>
+  
+   <worldbody>
+
+      <geom type="plane" size="10 10 0.1" rgba="0.7 0.8 0 0.7" friction="1 0.005" material="grid" condim="3"/>
+      <light name="spotlight" mode="targetbodycom" 
+      	target="end_effector" diffuse=".8 .8 .8" specular="0.3 0.3 0.3" pos="0 -20 4" cutoff="10"/>
+      <body name="end_effector" pos="1 1 1">
+         <joint type="free"/>
+         <geom type="sphere" size=".03" rgba="0 .9 0 1" material="collision_mat" friction="1 0.005" mass="0.5" condim="1"/>
+         <light name="top" pos="0 0 2" mode="trackcom"/>
+         <site name="endB0" pos="0.0 0.0 0.0" type="sphere" size="0.001"/>
+      </body>
+      <body pos="0 0 0">
+         <!-- <joint type="free"/> -->
+         <geom type="cylinder" fromto="0.5 0 0.7  0.5 0 0" size="0.008"/>
+         <site name="endC0" pos="0.5 0 0.7" type="sphere" size="0.01"/>
+         <site name="endC1" pos="0.5 0 0.0" type="sphere" size="0.01"/>
+         <body>
+            <geom type="cylinder" fromto="0.5 0 0.008  0.5 1.5 0.008" size="0.008"/>
+            <body>
+               <geom type="cylinder" fromto="0.5 1.5 0.7  0.5 1.5 0" size="0.008"/>
+               <site name="endC2" pos="0.5 1.5 0.7" type="sphere" size="0.01"/>
+               <site name="endC3" pos="0.5 1.5 0.0" type="sphere" size="0.01"/>
+               <body>
+                  <geom type="cylinder" fromto="0.5 1.5 0.7  2 1.5 0.7" size="0.008"/>
+                  <geom type="cylinder" fromto="0.5 1.5 0  2 1.5 0" size="0.008"/>
+               </body>
+            </body>
+         </body>
+         <body>
+            <geom type="cylinder" fromto="0.5 0 0.7  2 0 0.7" size="0.008"/>
+         </body>
+         <body>
+            <geom type="cylinder" fromto="0.5 0 0.7  0.5 1.5 0.7" size="0.008"/>
+         </body>
+         <body>
+            <geom type="cylinder" fromto="0.5 0 0  2 0 0.008" size="0.008"/>
+            <body>
+               <geom type="cylinder" fromto="2 0 0.7  2 0 0" size="0.008"/>
+               <body>
+                  <geom type="cylinder" fromto="2 0 0.7  2 1.5 0.7" size="0.008"/>
+                  <geom type="cylinder" fromto="2 0 0  2 1.5 0" size="0.008"/>
+                  <site name="endC4" pos="2 0 0.7" type="sphere" size="0.01"/>
+                  <site name="endC5" pos="2 0 0.0" type="sphere" size="0.01"/>
+                  <body>
+                     <geom type="cylinder" fromto="2 1.5 0.7  2 1.5 0" size="0.008"/>
+                     <site name="endC6" pos="2 1.5 0.7" type="sphere" size="0.01"/>
+                     <site name="endC7" pos="2 1.5 0.0" type="sphere" size="0.01"/>
+                  </body>
+               </body>
+            </body>
+         </body>
+      </body>
+   </worldbody>
+   <tendon>
+        <spatial name="Wt" limited="true" range="0 0.9" width="0.003" material="collision_mat">
+            <site site="endC0"/>
+            <site site="endB0"/>
+        </spatial>
+        <spatial name="Wb" limited="true" range="0 0.9" width="0.003" material="collision_mat">
+            <site site="endC2"/>
+            <site site="endB0"/>
+        </spatial>
+        <spatial name="Et" limited="true" range="0 0.9" width="0.003" material="collision_mat">
+            <site site="endC4"/>
+            <site site="endB0"/>
+        </spatial>
+        <spatial name="Eb" limited="true" range="0 0.9" width="0.003" material="collision_mat">
+            <site site="endC6"/>
+            <site site="endB0"/>
+        </spatial>
+        <spatial name="Nt" limited="true" range="0 0.9" width="0.003" material="collision_mat">
+            <site site="endC1"/>
+            <site site="endB0"/>
+        </spatial>
+        <spatial name="Nb" limited="true" range="0 0.9" width="0.003" material="collision_mat">
+            <site site="endC3"/>
+            <site site="endB0"/>
+        </spatial>
+        <spatial name="St" limited="true" range="0 0.9" width="0.003" material="collision_mat">
+            <site site="endC5"/>
+            <site site="endB0"/>
+        </spatial>
+        <spatial name="Sb" limited="true" range="0 0.9" width="0.003" material="collision_mat">
+            <site site="endC7"/>
+            <site site="endB0"/>
+        </spatial>
+    </tendon>
+    <actuator>
+        <motor name="Wt" tendon="Wt" gear="20000"/>
+        <motor name="Wb" tendon="Wb" gear="20000"/>
+        <motor name="Et" tendon="Et" gear="20000"/>
+        <motor name="Eb" tendon="Eb" gear="20000"/>
+        <motor name="St" tendon="St" gear="20000"/>
+        <motor name="Sb" tendon="Sb" gear="20000"/>
+        <motor name="Nt" tendon="Nt" gear="20000"/>
+        <motor name="Nb" tendon="Nb" gear="20000"/>
+    </actuator>
+</mujoco>
