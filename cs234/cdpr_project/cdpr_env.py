@@ -12,7 +12,7 @@ import mujoco
 import numpy as np
 
 
-class cdpr_env(gym.Env()):
+class cdpr_env(gym.Env):
     
     def __init__():
         super(cdpr_env, self).__init__()
