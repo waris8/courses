@@ -9,7 +9,7 @@ Created on Mon Nov  6 14:09:12 2023
 from gymnasium.envs.registration import register
 
 register(
-     id="sphereCDPR-v0",
-     entry_point="cdpr_env",
+     id="envs/sphereCDPR-v0",
+     entry_point="env.cdpr_env:cdpr_env",
      max_episode_steps=300,
 )

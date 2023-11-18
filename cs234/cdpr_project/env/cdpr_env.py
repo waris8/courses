@@ -23,13 +23,13 @@ class cdpr_env(gym.Env):
        "render_fps": 20,
     }
     
-    def __init__(self, frame_skip, render_mode=None, camera_id = None, camera_name = None):
+    def __init__(self, frame_skip=None, render_mode=None, camera_id = None, camera_name = None):
         
         super(cdpr_env, self).__init__()
-        self.model = mujoco.MjModel.from_xml_path("/model/sphereCDPR_2D.xml")
+        self.model = mujoco.MjModel.from_xml_path("model/sphereCDPR_2D.xml")
         self.data = mujoco.MjData(self.model)
         
-        self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(8,),dtype=np.float64)
+        self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(10,),dtype=np.float64)   #position, velocity, acceleration, cable length
         self._set_action_space()
         
         self.init_qpos = self.data.qpos.ravel().copy()
@@ -54,8 +54,8 @@ class cdpr_env(gym.Env):
     def _get_obs(self):
         return np.concatenate(
             [
-                self.data.qpos.flat[1:],
-                self.data.qvel.flat,
+                self.data.qpos[:2].flat[1:],
+                self.data.qvel[:2].flat,
                 self.data.ten_length.flat
             ]
         )

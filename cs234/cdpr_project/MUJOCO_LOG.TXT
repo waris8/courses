@@ -1,3 +1,9 @@
 Tue Nov  7 12:53:06 2023
 WARNING: mju_openResource: unknown file '/model/sphereCDPR_2D.xml'
 
+Sun Nov 12 16:53:07 2023
+WARNING: mju_openResource: unknown file '/model/sphereCDPR_2D.xml'
+
+Fri Nov 17 00:02:32 2023
+WARNING: Nan, Inf or huge value in CTRL at ACTUATOR 0. The simulation is unstable. Time = 0.1200.
+
